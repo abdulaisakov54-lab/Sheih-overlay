@@ -16,9 +16,6 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
-
       - name: Install Gradle 8.1.1
         run: |
           wget https://services.gradle.org/distributions/gradle-8.1.1-bin.zip
