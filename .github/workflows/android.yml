@@ -16,6 +16,14 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
+      - name: Create local.properties & Accept SDK Licenses
+        run: |
+          echo "sdk.dir=$ANDROID_SDK_ROOT" > local.properties
+          mkdir -p $ANDROID_SDK_ROOT/licenses
+          echo "24333f8a43b680d230493636582930493d6e1d4b" > $ANDROID_SDK_ROOT/licenses/android-sdk-license
+          echo "84831b9409646a918e30573bab4c9c91346d8abd" >> $ANDROID_SDK_ROOT/licenses/android-sdk-license
+          echo "d56f5187479451eabf01fb78af6dfcb131964887" >> $ANDROID_SDK_ROOT/licenses/android-sdk-license
+
       - name: Install Gradle 8.1.1
         run: |
           wget https://services.gradle.org/distributions/gradle-8.1.1-bin.zip
@@ -25,14 +33,8 @@ jobs:
       - name: Generate Gradle Wrapper
         run: gradle wrapper --gradle-version 8.1.1
 
-      - name: Accept SDK Licenses & Install Components
-        run: |
-          export ANDROID_SDK_ROOT=/usr/local/lib/android/sdk
-          yes | $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager --licenses || true
-          $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager "platforms;android-33" "build-tools;33.0.2"
-
       - name: Build APK
-        run: ./gradlew assembleRelease --stacktrace
+        run: ./gradlew assembleRelease
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
