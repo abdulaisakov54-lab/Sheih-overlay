@@ -1,437 +1,530 @@
--- XONE MOBILE v2
+-- XONE MEGA v3
 -- LocalScript
--- Для собственного Roblox Studio проекта
+-- StarterPlayer > StarterPlayerScripts
 
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local UIS = game:GetService("UserInputService")
-local Camera = workspace.CurrentCamera
-local Player = Players.LocalPlayer
+local Lighting = game:GetService("Lighting")
+local CollectionService = game:GetService("CollectionService")
 
-local S = {
-    Aim = false,
-    Silent = false,
+local Player = Players.LocalPlayer
+local Camera = workspace.CurrentCamera
+
+local Config = {
+    Accent = Color3.fromRGB(145, 85, 255),
+    Background = Color3.fromRGB(14, 15, 23),
+    Transparency = 0.05,
+    Speed = 16,
+    Jump = 50,
+    CameraFOV = 70,
+    CircleFOV = 150,
+    ShowCircle = true,
+    AimTraining = false,
     ESP = false,
     Box = false,
     Skeleton = false,
     Names = true,
     Health = true,
-    FOV = 150,
-    Smooth = 0.18,
-    AimPart = "Head",
-    Background = Color3.fromRGB(15, 15, 23),
-    Transparency = 0.05,
-    FOVColor = Color3.fromRGB(150, 80, 255),
-    CircleVisible = true
+    FullBright = false,
+    Fog = false,
+    Watermark = true
 }
 
 local GUI = Instance.new("ScreenGui")
-GUI.Name = "XONE_MOBILE"
+GUI.Name = "XONE_MEGA"
 GUI.ResetOnSpawn = false
+GUI.DisplayOrder = 100
 GUI.Parent = Player:WaitForChild("PlayerGui")
 
 -- WATERMARK
+
 local Watermark = Instance.new("TextButton")
-Watermark.Size = UDim2.fromOffset(105, 35)
-Watermark.Position = UDim2.new(0, 12, 0, 80)
-Watermark.BackgroundColor3 = Color3.fromRGB(110, 65, 240)
-Watermark.Text = "XONE"
+Watermark.Size = UDim2.fromOffset(115, 38)
+Watermark.Position = UDim2.new(0, 12, 0, 90)
+Watermark.BackgroundColor3 = Config.Accent
+Watermark.Text = "XONE MEGA"
 Watermark.TextColor3 = Color3.new(1,1,1)
 Watermark.Font = Enum.Font.GothamBlack
-Watermark.TextSize = 17
+Watermark.TextSize = 14
 Watermark.Parent = GUI
-Instance.new("UICorner", Watermark).CornerRadius = UDim.new(0, 9)
 
--- MAIN MENU
+Instance.new("UICorner", Watermark).CornerRadius =
+    UDim.new(0, 9)
+
+-- MAIN PANEL
+
 local Main = Instance.new("Frame")
-Main.Size = UDim2.fromOffset(280, 440)
-Main.Position = UDim2.new(0.5, -140, 0.5, -220)
-Main.BackgroundColor3 = S.Background
-Main.BackgroundTransparency = S.Transparency
+Main.Size = UDim2.fromOffset(340, 440)
+Main.Position = UDim2.new(0.5, -170, 0.5, -220)
+Main.BackgroundColor3 = Config.Background
+Main.BackgroundTransparency = Config.Transparency
 Main.BorderSizePixel = 0
-Main.Visible = true
 Main.Parent = GUI
-Instance.new("UICorner", Main).CornerRadius = UDim.new(0, 12)
 
-local Stroke = Instance.new("UIStroke")
-Stroke.Color = S.FOVColor
-Stroke.Thickness = 1.5
-Stroke.Parent = Main
+Instance.new("UICorner", Main).CornerRadius =
+    UDim.new(0, 13)
 
-local Title = Instance.new("TextLabel")
-Title.Size = UDim2.new(1, 0, 0, 45)
-Title.BackgroundTransparency = 1
-Title.Text = "XONE MOBILE  /  V2"
-Title.TextColor3 = S.FOVColor
-Title.Font = Enum.Font.GothamBlack
-Title.TextSize = 18
-Title.Parent = Main
+local Border = Instance.new("UIStroke")
+Border.Color = Config.Accent
+Border.Thickness = 1.5
+Border.Parent = Main
 
-local Container = Instance.new("ScrollingFrame")
-Container.Position = UDim2.fromOffset(10, 50)
-Container.Size = UDim2.new(1, -20, 1, -60)
-Container.BackgroundTransparency = 1
-Container.BorderSizePixel = 0
-Container.ScrollBarThickness = 3
-Container.CanvasSize = UDim2.fromOffset(0, 700)
-Container.Parent = Main
+local Header = Instance.new("TextLabel")
+Header.Size = UDim2.new(1, -60, 0, 48)
+Header.Position = UDim2.fromOffset(15, 0)
+Header.BackgroundTransparency = 1
+Header.Text = "XONE MEGA"
+Header.TextColor3 = Config.Accent
+Header.TextXAlignment = Enum.TextXAlignment.Left
+Header.Font = Enum.Font.GothamBlack
+Header.TextSize = 21
+Header.Parent = Main
+
+local Close = Instance.new("TextButton")
+Close.Size = UDim2.fromOffset(35, 35)
+Close.Position = UDim2.new(1, -43, 0, 7)
+Close.BackgroundColor3 = Color3.fromRGB(65, 35, 45)
+Close.Text = "X"
+Close.TextColor3 = Color3.new(1,1,1)
+Close.Font = Enum.Font.GothamBold
+Close.TextSize = 15
+Close.Parent = Main
+
+Instance.new("UICorner", Close).CornerRadius =
+    UDim.new(0, 8)
+
+-- SIDEBAR
+
+local Sidebar = Instance.new("Frame")
+Sidebar.Size = UDim2.new(0, 105, 1, -60)
+Sidebar.Position = UDim2.fromOffset(8, 52)
+Sidebar.BackgroundColor3 = Color3.fromRGB(23, 24, 35)
+Sidebar.BorderSizePixel = 0
+Sidebar.Parent = Main
+
+Instance.new("UICorner", Sidebar).CornerRadius =
+    UDim.new(0, 9)
+
+local SideLayout = Instance.new("UIListLayout")
+SideLayout.Padding = UDim.new(0, 6)
+SideLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+SideLayout.Parent = Sidebar
+
+-- CONTENT
+
+local Content = Instance.new("ScrollingFrame")
+Content.Position = UDim2.fromOffset(122, 57)
+Content.Size = UDim2.new(1, -132, 1, -68)
+Content.BackgroundTransparency = 1
+Content.BorderSizePixel = 0
+Content.ScrollBarThickness = 3
+Content.CanvasSize = UDim2.fromOffset(0, 1000)
+Content.Parent = Main
 
 local Layout = Instance.new("UIListLayout")
-Layout.Padding = UDim.new(0, 7)
-Layout.Parent = Container
+Layout.Padding = UDim.new(0, 8)
+Layout.Parent = Content
 
-local function Button(text, callback)
+local Pages = {}
+local CurrentPage = nil
+
+local function NewPage(name)
+    local page = Instance.new("Frame")
+    page.Name = name
+    page.Size = UDim2.new(1, -5, 0, 1000)
+    page.BackgroundTransparency = 1
+    page.Visible = false
+    page.Parent = Content
+
+    local layout = Instance.new("UIListLayout")
+    layout.Padding = UDim.new(0, 8)
+    layout.Parent = page
+
+    Pages[name] = page
+    return page
+end
+
+local function SwitchPage(name)
+    for n, page in pairs(Pages) do
+        page.Visible = n == name
+    end
+
+    CurrentPage = name
+end
+
+local function Tab(name)
+    local button = Instance.new("TextButton")
+    button.Size = UDim2.new(1, -10, 0, 38)
+    button.BackgroundColor3 = Color3.fromRGB(38, 38, 53)
+    button.Text = name
+    button.TextColor3 = Color3.new(1,1,1)
+    button.Font = Enum.Font.GothamSemibold
+    button.TextSize = 12
+    button.Parent = Sidebar
+
+    Instance.new("UICorner", button).CornerRadius =
+        UDim.new(0, 7)
+
+    button.Activated:Connect(function()
+        SwitchPage(name)
+    end)
+
+    return button
+end
+
+local function Section(page, name)
+    local label = Instance.new("TextLabel")
+    label.Size = UDim2.new(1, -5, 0, 28)
+    label.BackgroundTransparency = 1
+    label.Text = name
+    label.TextColor3 = Config.Accent
+    label.TextXAlignment = Enum.TextXAlignment.Left
+    label.Font = Enum.Font.GothamBold
+    label.TextSize = 14
+    label.Parent = page
+end
+
+local function Button(page, name, callback)
     local b = Instance.new("TextButton")
     b.Size = UDim2.new(1, -5, 0, 38)
-    b.BackgroundColor3 = Color3.fromRGB(38, 38, 53)
+    b.BackgroundColor3 = Color3.fromRGB(37, 38, 52)
     b.TextColor3 = Color3.new(1,1,1)
-    b.Text = text
+    b.Text = name
     b.Font = Enum.Font.GothamSemibold
-    b.TextSize = 13
-    b.Parent = Container
-    Instance.new("UICorner", b).CornerRadius = UDim.new(0, 7)
-    b.MouseButton1Click:Connect(callback)
+    b.TextSize = 12
+    b.Parent = page
+
+    Instance.new("UICorner", b).CornerRadius =
+        UDim.new(0, 7)
+
+    b.Activated:Connect(callback)
     return b
 end
 
-local function Toggle(name, key)
+local function Toggle(page, name, key, callback)
     local b
-    b = Button(name .. ": OFF", function()
-        S[key] = not S[key]
-        b.Text = name .. ": " .. (S[key] and "ON" or "OFF")
+
+    local function Update()
+        b.Text = name .. ": " ..
+            (Config[key] and "ON" or "OFF")
+        b.BackgroundColor3 = Config[key]
+            and Color3.fromRGB(70, 45, 120)
+            or Color3.fromRGB(37, 38, 52)
+    end
+
+    b = Button(page, name, function()
+        Config[key] = not Config[key]
+        Update()
+        if callback then callback(Config[key]) end
     end)
+
+    Update()
     return b
 end
 
-local function Change(name, callback)
-    return Button(name, callback)
-end
+-- CREATE PAGES
 
--- AIM
-Toggle("AIMBOT", "Aim")
-Toggle("SILENT AIM", "Silent")
+local Combat = NewPage("Combat")
+local Visuals = NewPage("Visuals")
+local PlayerPage = NewPage("Player")
+local World = NewPage("World")
+local Misc = NewPage("Misc")
+local Settings = NewPage("Settings")
 
-Change("FOV: +25", function()
-    S.FOV = math.min(S.FOV + 25, 500)
+Tab("Combat")
+Tab("Visuals")
+Tab("Player")
+Tab("World")
+Tab("Misc")
+Tab("Settings")
+
+-- COMBAT
+
+Section(Combat, "AIM / TRAINING")
+
+Toggle(Combat, "Aim Training", "AimTraining")
+
+Toggle(Combat, "FOV Circle", "ShowCircle")
+
+Button(Combat, "FOV + 25", function()
+    Config.CircleFOV = math.min(Config.CircleFOV + 25, 500)
 end)
 
-Change("FOV: -25", function()
-    S.FOV = math.max(S.FOV - 25, 25)
+Button(Combat, "FOV - 25", function()
+    Config.CircleFOV = math.max(Config.CircleFOV - 25, 25)
 end)
 
-Change("SMOOTH AIM: +", function()
-    S.Smooth = math.min(S.Smooth + 0.05, 1)
+Button(Combat, "Camera FOV +", function()
+    Config.CameraFOV = math.min(Config.CameraFOV + 5, 120)
+    Camera.FieldOfView = Config.CameraFOV
 end)
 
-Change("SMOOTH AIM: -", function()
-    S.Smooth = math.max(S.Smooth - 0.05, 0.05)
+Button(Combat, "Camera FOV -", function()
+    Config.CameraFOV = math.max(Config.CameraFOV - 5, 40)
+    Camera.FieldOfView = Config.CameraFOV
 end)
 
-Change("TARGET PART: HEAD / TORSO", function()
-    S.AimPart = S.AimPart == "Head" and "HumanoidRootPart" or "Head"
+-- VISUALS
+
+Section(Visuals, "TRAINING TARGET VISUALS")
+
+Toggle(Visuals, "ESP", "ESP")
+Toggle(Visuals, "Box", "Box")
+Toggle(Visuals, "Skeleton", "Skeleton")
+Toggle(Visuals, "Names", "Names")
+Toggle(Visuals, "Health", "Health")
+
+-- PLAYER
+
+Section(PlayerPage, "MOVEMENT")
+
+Button(PlayerPage, "Speed +", function()
+    Config.Speed = math.min(Config.Speed + 2, 100)
+    local hum = Player.Character and
+        Player.Character:FindFirstChildOfClass("Humanoid")
+    if hum then hum.WalkSpeed = Config.Speed end
 end)
 
--- ESP
-Toggle("ESP", "ESP")
-Toggle("ESP BOX", "Box")
-Toggle("ESP SKELETON", "Skeleton")
-Toggle("ESP NAMES", "Names")
-Toggle("ESP HEALTH", "Health")
-
--- APPEARANCE
-Change("FOV COLOR: PURPLE", function()
-    S.FOVColor = Color3.fromRGB(150, 80, 255)
-    CircleStroke.Color = S.FOVColor
-    Stroke.Color = S.FOVColor
+Button(PlayerPage, "Speed -", function()
+    Config.Speed = math.max(Config.Speed - 2, 0)
+    local hum = Player.Character and
+        Player.Character:FindFirstChildOfClass("Humanoid")
+    if hum then hum.WalkSpeed = Config.Speed end
 end)
 
-Change("FOV COLOR: RED", function()
-    S.FOVColor = Color3.fromRGB(255, 65, 75)
-    CircleStroke.Color = S.FOVColor
-    Stroke.Color = S.FOVColor
+Button(PlayerPage, "Normal Speed", function()
+    Config.Speed = 16
+    local hum = Player.Character and
+        Player.Character:FindFirstChildOfClass("Humanoid")
+    if hum then hum.WalkSpeed = 16 end
 end)
 
-Change("BACKGROUND: DARK", function()
-    S.Background = Color3.fromRGB(15, 15, 23)
-    Main.BackgroundColor3 = S.Background
+Button(PlayerPage, "Jump +", function()
+    Config.Jump = math.min(Config.Jump + 5, 150)
+    local hum = Player.Character and
+        Player.Character:FindFirstChildOfClass("Humanoid")
+    if hum then hum.JumpPower = Config.Jump end
 end)
 
-Change("BACKGROUND: BLUE", function()
-    S.Background = Color3.fromRGB(15, 35, 65)
-    Main.BackgroundColor3 = S.Background
+Button(PlayerPage, "Normal Jump", function()
+    Config.Jump = 50
+    local hum = Player.Character and
+        Player.Character:FindFirstChildOfClass("Humanoid")
+    if hum then hum.JumpPower = 50 end
 end)
 
-Change("BACKGROUND: PURPLE", function()
-    S.Background = Color3.fromRGB(45, 20, 65)
-    Main.BackgroundColor3 = S.Background
+-- WORLD
+
+Section(World, "ENVIRONMENT")
+
+Toggle(World, "Full Bright", "FullBright", function(value)
+    Lighting.Brightness = value and 3 or 1
+    Lighting.Ambient = value
+        and Color3.new(1,1,1)
+        or Color3.fromRGB(100,100,100)
 end)
 
-Change("BACKGROUND TRANSPARENCY", function()
-    S.Transparency = S.Transparency == 0.05 and 0.35 or
-        (S.Transparency == 0.35 and 0.65 or 0.05)
-    Main.BackgroundTransparency = S.Transparency
+Toggle(World, "Fog", "Fog", function(value)
+    Lighting.FogEnd = value and 150 or 100000
 end)
 
--- FOV CIRCLE
-local Circle = Instance.new("Frame")
-Circle.Name = "FOV_CIRCLE"
-Circle.AnchorPoint = Vector2.new(0.5, 0.5)
-Circle.Size = UDim2.fromOffset(S.FOV * 2, S.FOV * 2)
-Circle.BackgroundTransparency = 1
-Circle.Parent = GUI
+Button(World, "Day", function()
+    Lighting.ClockTime = 14
+end)
 
-Instance.new("UICorner", Circle).CornerRadius = UDim.new(1, 0)
+Button(World, "Night", function()
+    Lighting.ClockTime = 0
+end)
 
-local CircleStroke = Instance.new("UIStroke")
-CircleStroke.Color = S.FOVColor
-CircleStroke.Thickness = 1.5
-CircleStroke.Parent = Circle
+Button(World, "Morning", function()
+    Lighting.ClockTime = 7
+end)
+
+-- MISC
+
+Section(Misc, "INTERFACE")
+
+Toggle(Misc, "Watermark", "Watermark", function(value)
+    Watermark.Visible = value
+end)
+
+Button(Misc, "Hide Menu", function()
+    Main.Visible = false
+end)
+
+Button(Misc, "Reset Interface", function()
+    Main.Visible = true
+    Main.BackgroundColor3 = Config.Background
+    Main.BackgroundTransparency = Config.Transparency
+end)
+
+-- SETTINGS
+
+Section(Settings, "COLORS")
+
+Button(Settings, "Purple Theme", function()
+    Config.Accent = Color3.fromRGB(145,85,255)
+    Border.Color = Config.Accent
+    Header.TextColor3 = Config.Accent
+    Watermark.BackgroundColor3 = Config.Accent
+end)
+
+Button(Settings, "Red Theme", function()
+    Config.Accent = Color3.fromRGB(255,65,75)
+    Border.Color = Config.Accent
+    Header.TextColor3 = Config.Accent
+    Watermark.BackgroundColor3 = Config.Accent
+end)
+
+Button(Settings, "Blue Theme", function()
+    Config.Accent = Color3.fromRGB(50,150,255)
+    Border.Color = Config.Accent
+    Header.TextColor3 = Config.Accent
+    Watermark.BackgroundColor3 = Config.Accent
+end)
+
+Button(Settings, "Dark Background", function()
+    Config.Background = Color3.fromRGB(14,15,23)
+    Main.BackgroundColor3 = Config.Background
+end)
+
+Button(Settings, "Purple Background", function()
+    Config.Background = Color3.fromRGB(38,20,55)
+    Main.BackgroundColor3 = Config.Background
+end)
+
+Button(Settings, "Transparency +", function()
+    Config.Transparency = math.min(Config.Transparency + 0.1, 0.7)
+    Main.BackgroundTransparency = Config.Transparency
+end)
+
+Button(Settings, "Transparency -", function()
+    Config.Transparency = math.max(Config.Transparency - 0.1, 0)
+    Main.BackgroundTransparency = Config.Transparency
+end)
 
 -- WATERMARK OPEN / CLOSE
-Watermark.MouseButton1Click:Connect(function()
+
+Watermark.Activated:Connect(function()
     Main.Visible = not Main.Visible
 end)
 
--- SILENT AIM TARGET API
--- Weapon LocalScript can call this BindableFunction.
-local AimAPI = Instance.new("BindableFunction")
-AimAPI.Name = "XONE_GetAimTarget"
-AimAPI.Parent = GUI
+Close.Activated:Connect(function()
+    Main.Visible = false
+end)
 
-local CurrentTarget = nil
+-- DRAG MENU
 
-local function GetTarget()
-    local center = Camera.ViewportSize / 2
-    local nearest = nil
-    local nearestDistance = S.FOV
+local dragging = false
+local dragStart
+local startPosition
 
-    for _, plr in ipairs(Players:GetPlayers()) do
-        if plr ~= Player then
-            local char = plr.Character
-            local hum = char and char:FindFirstChildOfClass("Humanoid")
-            local part = char and char:FindFirstChild(S.AimPart)
+Header.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.Touch
+        or input.UserInputType == Enum.UserInputType.MouseButton1 then
 
-            if hum and part and hum.Health > 0 then
-                local pos, visible = Camera:WorldToViewportPoint(part.Position)
-
-                if visible and pos.Z > 0 then
-                    local distance = (
-                        Vector2.new(pos.X, pos.Y) - center
-                    ).Magnitude
-
-                    if distance < nearestDistance then
-                        nearestDistance = distance
-                        nearest = part
-                    end
-                end
-            end
-        end
-    end
-
-    return nearest
-end
-
-AimAPI.OnInvoke = function()
-    if not S.Silent then return nil end
-    return CurrentTarget and CurrentTarget.Position
-end
-
--- ESP OBJECTS
-local ESPObjects = {}
-
-local function CreateLine(parent)
-    local line = Instance.new("Frame")
-    line.BorderSizePixel = 0
-    line.BackgroundColor3 = Color3.fromRGB(160, 110, 255)
-    line.AnchorPoint = Vector2.new(0.5, 0.5)
-    line.Parent = parent
-    return line
-end
-
-local function DrawLine(line, a, b)
-    local delta = b - a
-    line.Position = UDim2.fromOffset(
-        (a.X + b.X) / 2,
-        (a.Y + b.Y) / 2
-    )
-    line.Size = UDim2.fromOffset(2, delta.Magnitude)
-    line.Rotation = math.deg(math.atan2(delta.Y, delta.X)) + 90
-end
-
-local function CreateESP(plr)
-    if plr == Player then return end
-
-    local data = ESPObjects[plr]
-
-    if not data then
-        local folder = Instance.new("Folder")
-        folder.Name = "ESP_" .. plr.Name
-        folder.Parent = GUI
-
-        local box = Instance.new("Frame")
-        box.BackgroundTransparency = 1
-        box.BorderSizePixel = 0
-        box.Parent = folder
-
-        local boxStroke = Instance.new("UIStroke")
-        boxStroke.Color = Color3.fromRGB(160, 110, 255)
-        boxStroke.Thickness = 1.5
-        boxStroke.Parent = box
-
-        local label = Instance.new("TextLabel")
-        label.Size = UDim2.fromOffset(180, 22)
-        label.BackgroundTransparency = 1
-        label.TextColor3 = Color3.new(1,1,1)
-        label.TextStrokeTransparency = 0
-        label.Font = Enum.Font.GothamBold
-        label.TextSize = 12
-        label.Parent = folder
-
-        local lines = {}
-        for i = 1, 15 do
-            lines[i] = CreateLine(folder)
-        end
-
-        data = {
-            Folder = folder,
-            Box = box,
-            Label = label,
-            Lines = lines
-        }
-
-        ESPObjects[plr] = data
-    end
-
-    return data
-end
-
-local Bones = {
-    {"Head", "UpperTorso"},
-    {"UpperTorso", "LowerTorso"},
-    {"UpperTorso", "LeftUpperArm"},
-    {"LeftUpperArm", "LeftLowerArm"},
-    {"LeftLowerArm", "LeftHand"},
-    {"UpperTorso", "RightUpperArm"},
-    {"RightUpperArm", "RightLowerArm"},
-    {"RightLowerArm", "RightHand"},
-    {"LowerTorso", "LeftUpperLeg"},
-    {"LeftUpperLeg", "LeftLowerLeg"},
-    {"LeftLowerLeg", "LeftFoot"},
-    {"LowerTorso", "RightUpperLeg"},
-    {"RightUpperLeg", "RightLowerLeg"},
-    {"RightLowerLeg", "RightFoot"}
-}
-
-local function UpdateESP(plr)
-    local data = CreateESP(plr)
-    if not data then return end
-
-    local char = plr.Character
-    local hum = char and char:FindFirstChildOfClass("Humanoid")
-    local root = char and char:FindFirstChild("HumanoidRootPart")
-    local head = char and char:FindFirstChild("Head")
-
-    if not S.ESP or not char or not hum or not root or
-        hum.Health <= 0 then
-        data.Folder.Visible = false
-        return
-    end
-
-    data.Folder.Visible = true
-
-    local top = head and Camera:WorldToViewportPoint(
-        head.Position + Vector3.new(0, 0.5, 0)
-    )
-
-    local bottom = Camera:WorldToViewportPoint(
-        root.Position - Vector3.new(0, 3, 0)
-    )
-
-    if not top or top.Z <= 0 or bottom.Z <= 0 then
-        data.Folder.Visible = false
-        return
-    end
-
-    local height = math.abs(bottom.Y - top.Y)
-    local width = height * 0.48
-
-    data.Box.Visible = S.Box
-    data.Box.Position = UDim2.fromOffset(
-        top.X - width / 2, top.Y
-    )
-    data.Box.Size = UDim2.fromOffset(width, height)
-
-    data.Label.Visible = S.Names or S.Health
-
-    local info = {}
-    if S.Names then table.insert(info, plr.DisplayName) end
-    if S.Health then
-        table.insert(info, "HP " .. math.floor(hum.Health))
-    end
-
-    data.Label.Text = table.concat(info, " | ")
-    data.Label.Position = UDim2.fromOffset(
-        top.X - 90, top.Y - 23
-    )
-
-    for i, bone in ipairs(Bones) do
-        local a = char:FindFirstChild(bone[1])
-        local b = char:FindFirstChild(bone[2])
-        local line = data.Lines[i]
-
-        line.Visible = S.Skeleton and a ~= nil and b ~= nil
-
-        if line.Visible then
-            local pa = Camera:WorldToViewportPoint(a.Position)
-            local pb = Camera:WorldToViewportPoint(b.Position)
-
-            if pa.Z > 0 and pb.Z > 0 then
-                DrawLine(
-                    line,
-                    Vector2.new(pa.X, pa.Y),
-                    Vector2.new(pb.X, pb.Y)
-                )
-            else
-                line.Visible = false
-            end
-        end
-    end
-end
-
-Players.PlayerRemoving:Connect(function(plr)
-    if ESPObjects[plr] then
-        ESPObjects[plr].Folder:Destroy()
-        ESPObjects[plr] = nil
+        dragging = true
+        dragStart = input.Position
+        startPosition = Main.Position
     end
 end)
 
--- MAIN UPDATE
+UIS.InputChanged:Connect(function(input)
+    if dragging and (
+        input.UserInputType == Enum.UserInputType.Touch
+        or input.UserInputType == Enum.UserInputType.MouseMovement
+    ) then
+        local delta = input.Position - dragStart
+
+        Main.Position = UDim2.new(
+            startPosition.X.Scale,
+            startPosition.X.Offset + delta.X,
+            startPosition.Y.Scale,
+            startPosition.Y.Offset + delta.Y
+        )
+    end
+end)
+
+UIS.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.Touch
+        or input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = false
+    end
+end)
+
+-- FOV CIRCLE
+
+local Circle = Instance.new("Frame")
+Circle.AnchorPoint = Vector2.new(0.5,0.5)
+Circle.BackgroundTransparency = 1
+Circle.Parent = GUI
+
+Instance.new("UICorner", Circle).CornerRadius = UDim.new(1,0)
+
+local CircleBorder = Instance.new("UIStroke")
+CircleBorder.Color = Config.Accent
+CircleBorder.Thickness = 1.5
+CircleBorder.Parent = Circle
+
+-- TRAINING TARGET HIGHLIGHTS
+
+local Highlights = {}
+
+local function UpdateTargets()
+    for _, target in ipairs(
+        CollectionService:GetTagged("TrainingTarget")
+    ) do
+        if target:IsA("Model") then
+            local highlight = Highlights[target]
+
+            if not highlight then
+                highlight = Instance.new("Highlight")
+                highlight.FillColor = Config.Accent
+                highlight.OutlineColor = Color3.new(1,1,1)
+                highlight.Parent = target
+                Highlights[target] = highlight
+            end
+
+            highlight.Enabled = Config.ESP
+                or Config.Box
+                or Config.Skeleton
+        end
+    end
+
+    for target, highlight in pairs(Highlights) do
+        if not target.Parent then
+            highlight:Destroy()
+            Highlights[target] = nil
+        end
+    end
+end
+
+-- RENDER
+
 RunService.RenderStepped:Connect(function()
     Camera = workspace.CurrentCamera
 
     local center = Camera.ViewportSize / 2
 
     Circle.Position = UDim2.fromOffset(center.X, center.Y)
-    Circle.Size = UDim2.fromOffset(S.FOV * 2, S.FOV * 2)
-    Circle.Visible = S.CircleVisible and (S.Aim or S.Silent)
+    Circle.Size = UDim2.fromOffset(
+        Config.CircleFOV * 2,
+        Config.CircleFOV * 2
+    )
 
-    CurrentTarget = GetTarget()
+    Circle.Visible = Config.ShowCircle
 
-    if S.Aim and CurrentTarget then
-        local destination = CFrame.lookAt(
-            Camera.CFrame.Position,
-            CurrentTarget.Position
-        )
+    CircleBorder.Color = Config.Accent
 
-        Camera.CFrame = Camera.CFrame:Lerp(
-            destination,
-            S.Smooth
-        )
+    for target, highlight in pairs(Highlights) do
+        highlight.FillColor = Config.Accent
+        highlight.Enabled = Config.ESP
     end
 
-    for _, plr in ipairs(Players:GetPlayers()) do
-        UpdateESP(plr)
-    end
+    UpdateTargets()
 end)
 
-print("XONE MOBILE V2 LOADED")
+SwitchPage("Combat")
+
+print("XONE MEGA v3 LOADED")
