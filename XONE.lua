@@ -1,38 +1,34 @@
--- XONE MEGA v3
+-- XONE MEGA v4
 -- LocalScript
 -- StarterPlayer > StarterPlayerScripts
+-- Training targets must have CollectionService tag "TrainingTarget"
 
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local UIS = game:GetService("UserInputService")
-local Lighting = game:GetService("Lighting")
 local CollectionService = game:GetService("CollectionService")
 
 local Player = Players.LocalPlayer
 local Camera = workspace.CurrentCamera
 
 local Config = {
-    Accent = Color3.fromRGB(145, 85, 255),
-    Background = Color3.fromRGB(14, 15, 23),
-    Transparency = 0.05,
-    Speed = 16,
-    Jump = 50,
-    CameraFOV = 70,
-    CircleFOV = 150,
-    ShowCircle = true,
-    AimTraining = false,
-    ESP = false,
-    Box = false,
-    Skeleton = false,
+    Accent = Color3.fromRGB(145,85,255),
+    Background = Color3.fromRGB(14,15,23),
+
+    Aim = false,
+    ESP = true,
+    Box = true,
     Names = true,
     Health = true,
-    FullBright = false,
-    Fog = false,
-    Watermark = true
+    Skeleton = false,
+    ShowCircle = true,
+
+    FOV = 150,
+    AimSmooth = 0.18
 }
 
 local GUI = Instance.new("ScreenGui")
-GUI.Name = "XONE_MEGA"
+GUI.Name = "XONE_MEGA_V4"
 GUI.ResetOnSpawn = false
 GUI.DisplayOrder = 100
 GUI.Parent = Player:WaitForChild("PlayerGui")
@@ -40,8 +36,8 @@ GUI.Parent = Player:WaitForChild("PlayerGui")
 -- WATERMARK
 
 local Watermark = Instance.new("TextButton")
-Watermark.Size = UDim2.fromOffset(115, 38)
-Watermark.Position = UDim2.new(0, 12, 0, 90)
+Watermark.Size = UDim2.fromOffset(125,38)
+Watermark.Position = UDim2.new(0,12,0,90)
 Watermark.BackgroundColor3 = Config.Accent
 Watermark.Text = "XONE MEGA"
 Watermark.TextColor3 = Color3.new(1,1,1)
@@ -49,21 +45,18 @@ Watermark.Font = Enum.Font.GothamBlack
 Watermark.TextSize = 14
 Watermark.Parent = GUI
 
-Instance.new("UICorner", Watermark).CornerRadius =
-    UDim.new(0, 9)
+Instance.new("UICorner",Watermark).CornerRadius = UDim.new(0,9)
 
--- MAIN PANEL
+-- MAIN WINDOW
 
 local Main = Instance.new("Frame")
-Main.Size = UDim2.fromOffset(340, 440)
-Main.Position = UDim2.new(0.5, -170, 0.5, -220)
+Main.Size = UDim2.fromOffset(330,440)
+Main.Position = UDim2.new(0.5,-165,0.5,-220)
 Main.BackgroundColor3 = Config.Background
-Main.BackgroundTransparency = Config.Transparency
 Main.BorderSizePixel = 0
 Main.Parent = GUI
 
-Instance.new("UICorner", Main).CornerRadius =
-    UDim.new(0, 13)
+Instance.new("UICorner",Main).CornerRadius = UDim.new(0,12)
 
 local Border = Instance.new("UIStroke")
 Border.Color = Config.Accent
@@ -71,340 +64,147 @@ Border.Thickness = 1.5
 Border.Parent = Main
 
 local Header = Instance.new("TextLabel")
-Header.Size = UDim2.new(1, -60, 0, 48)
-Header.Position = UDim2.fromOffset(15, 0)
+Header.Size = UDim2.new(1,-50,0,45)
+Header.Position = UDim2.fromOffset(12,0)
 Header.BackgroundTransparency = 1
-Header.Text = "XONE MEGA"
+Header.Text = "XONE MEGA v4"
 Header.TextColor3 = Config.Accent
-Header.TextXAlignment = Enum.TextXAlignment.Left
 Header.Font = Enum.Font.GothamBlack
-Header.TextSize = 21
+Header.TextSize = 19
+Header.TextXAlignment = Enum.TextXAlignment.Left
 Header.Parent = Main
 
 local Close = Instance.new("TextButton")
-Close.Size = UDim2.fromOffset(35, 35)
-Close.Position = UDim2.new(1, -43, 0, 7)
-Close.BackgroundColor3 = Color3.fromRGB(65, 35, 45)
+Close.Size = UDim2.fromOffset(32,32)
+Close.Position = UDim2.new(1,-40,0,7)
 Close.Text = "X"
 Close.TextColor3 = Color3.new(1,1,1)
+Close.BackgroundColor3 = Color3.fromRGB(80,35,45)
 Close.Font = Enum.Font.GothamBold
-Close.TextSize = 15
 Close.Parent = Main
 
-Instance.new("UICorner", Close).CornerRadius =
-    UDim.new(0, 8)
-
--- SIDEBAR
-
-local Sidebar = Instance.new("Frame")
-Sidebar.Size = UDim2.new(0, 105, 1, -60)
-Sidebar.Position = UDim2.fromOffset(8, 52)
-Sidebar.BackgroundColor3 = Color3.fromRGB(23, 24, 35)
-Sidebar.BorderSizePixel = 0
-Sidebar.Parent = Main
-
-Instance.new("UICorner", Sidebar).CornerRadius =
-    UDim.new(0, 9)
-
-local SideLayout = Instance.new("UIListLayout")
-SideLayout.Padding = UDim.new(0, 6)
-SideLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
-SideLayout.Parent = Sidebar
-
--- CONTENT
+Instance.new("UICorner",Close).CornerRadius = UDim.new(0,7)
 
 local Content = Instance.new("ScrollingFrame")
-Content.Position = UDim2.fromOffset(122, 57)
-Content.Size = UDim2.new(1, -132, 1, -68)
+Content.Position = UDim2.fromOffset(10,52)
+Content.Size = UDim2.new(1,-20,1,-62)
 Content.BackgroundTransparency = 1
 Content.BorderSizePixel = 0
 Content.ScrollBarThickness = 3
-Content.CanvasSize = UDim2.fromOffset(0, 1000)
+Content.CanvasSize = UDim2.fromOffset(0,700)
 Content.Parent = Main
 
 local Layout = Instance.new("UIListLayout")
-Layout.Padding = UDim.new(0, 8)
+Layout.Padding = UDim.new(0,7)
 Layout.Parent = Content
 
-local Pages = {}
-local CurrentPage = nil
-
-local function NewPage(name)
-    local page = Instance.new("Frame")
-    page.Name = name
-    page.Size = UDim2.new(1, -5, 0, 1000)
-    page.BackgroundTransparency = 1
-    page.Visible = false
-    page.Parent = Content
-
-    local layout = Instance.new("UIListLayout")
-    layout.Padding = UDim.new(0, 8)
-    layout.Parent = page
-
-    Pages[name] = page
-    return page
-end
-
-local function SwitchPage(name)
-    for n, page in pairs(Pages) do
-        page.Visible = n == name
-    end
-
-    CurrentPage = name
-end
-
-local function Tab(name)
-    local button = Instance.new("TextButton")
-    button.Size = UDim2.new(1, -10, 0, 38)
-    button.BackgroundColor3 = Color3.fromRGB(38, 38, 53)
-    button.Text = name
-    button.TextColor3 = Color3.new(1,1,1)
-    button.Font = Enum.Font.GothamSemibold
-    button.TextSize = 12
-    button.Parent = Sidebar
-
-    Instance.new("UICorner", button).CornerRadius =
-        UDim.new(0, 7)
-
-    button.Activated:Connect(function()
-        SwitchPage(name)
-    end)
-
-    return button
-end
-
-local function Section(page, name)
+local function Section(name)
     local label = Instance.new("TextLabel")
-    label.Size = UDim2.new(1, -5, 0, 28)
+    label.Size = UDim2.new(1,-5,0,27)
     label.BackgroundTransparency = 1
     label.Text = name
     label.TextColor3 = Config.Accent
-    label.TextXAlignment = Enum.TextXAlignment.Left
     label.Font = Enum.Font.GothamBold
     label.TextSize = 14
-    label.Parent = page
+    label.TextXAlignment = Enum.TextXAlignment.Left
+    label.Parent = Content
 end
 
-local function Button(page, name, callback)
+local function Button(name,callback)
     local b = Instance.new("TextButton")
-    b.Size = UDim2.new(1, -5, 0, 38)
-    b.BackgroundColor3 = Color3.fromRGB(37, 38, 52)
+    b.Size = UDim2.new(1,-5,0,37)
+    b.BackgroundColor3 = Color3.fromRGB(37,38,52)
     b.TextColor3 = Color3.new(1,1,1)
-    b.Text = name
     b.Font = Enum.Font.GothamSemibold
     b.TextSize = 12
-    b.Parent = page
+    b.Text = name
+    b.Parent = Content
 
-    Instance.new("UICorner", b).CornerRadius =
-        UDim.new(0, 7)
-
+    Instance.new("UICorner",b).CornerRadius = UDim.new(0,7)
     b.Activated:Connect(callback)
     return b
 end
 
-local function Toggle(page, name, key, callback)
+local function Toggle(name,key)
     local b
 
     local function Update()
-        b.Text = name .. ": " ..
-            (Config[key] and "ON" or "OFF")
+        b.Text = name .. ": " .. (Config[key] and "ON" or "OFF")
         b.BackgroundColor3 = Config[key]
-            and Color3.fromRGB(70, 45, 120)
-            or Color3.fromRGB(37, 38, 52)
+            and Color3.fromRGB(75,45,125)
+            or Color3.fromRGB(37,38,52)
     end
 
-    b = Button(page, name, function()
+    b = Button("",function()
         Config[key] = not Config[key]
         Update()
-        if callback then callback(Config[key]) end
     end)
 
     Update()
     return b
 end
 
--- CREATE PAGES
+-- AIM
 
-local Combat = NewPage("Combat")
-local Visuals = NewPage("Visuals")
-local PlayerPage = NewPage("Player")
-local World = NewPage("World")
-local Misc = NewPage("Misc")
-local Settings = NewPage("Settings")
+Section("COMBAT")
 
-Tab("Combat")
-Tab("Visuals")
-Tab("Player")
-Tab("World")
-Tab("Misc")
-Tab("Settings")
+Toggle("Aim Assist","Aim")
+Toggle("FOV Circle","ShowCircle")
 
--- COMBAT
-
-Section(Combat, "AIM / TRAINING")
-
-Toggle(Combat, "Aim Training", "AimTraining")
-
-Toggle(Combat, "FOV Circle", "ShowCircle")
-
-Button(Combat, "FOV + 25", function()
-    Config.CircleFOV = math.min(Config.CircleFOV + 25, 500)
+Button("FOV + 25",function()
+    Config.FOV = math.min(Config.FOV + 25,500)
 end)
 
-Button(Combat, "FOV - 25", function()
-    Config.CircleFOV = math.max(Config.CircleFOV - 25, 25)
+Button("FOV - 25",function()
+    Config.FOV = math.max(Config.FOV - 25,25)
 end)
 
-Button(Combat, "Camera FOV +", function()
-    Config.CameraFOV = math.min(Config.CameraFOV + 5, 120)
-    Camera.FieldOfView = Config.CameraFOV
+Button("Aim Smooth +",function()
+    Config.AimSmooth = math.min(Config.AimSmooth + 0.05,1)
 end)
 
-Button(Combat, "Camera FOV -", function()
-    Config.CameraFOV = math.max(Config.CameraFOV - 5, 40)
-    Camera.FieldOfView = Config.CameraFOV
+Button("Aim Smooth -",function()
+    Config.AimSmooth = math.max(Config.AimSmooth - 0.05,0.05)
 end)
 
 -- VISUALS
 
-Section(Visuals, "TRAINING TARGET VISUALS")
+Section("VISUALS")
 
-Toggle(Visuals, "ESP", "ESP")
-Toggle(Visuals, "Box", "Box")
-Toggle(Visuals, "Skeleton", "Skeleton")
-Toggle(Visuals, "Names", "Names")
-Toggle(Visuals, "Health", "Health")
-
--- PLAYER
-
-Section(PlayerPage, "MOVEMENT")
-
-Button(PlayerPage, "Speed +", function()
-    Config.Speed = math.min(Config.Speed + 2, 100)
-    local hum = Player.Character and
-        Player.Character:FindFirstChildOfClass("Humanoid")
-    if hum then hum.WalkSpeed = Config.Speed end
-end)
-
-Button(PlayerPage, "Speed -", function()
-    Config.Speed = math.max(Config.Speed - 2, 0)
-    local hum = Player.Character and
-        Player.Character:FindFirstChildOfClass("Humanoid")
-    if hum then hum.WalkSpeed = Config.Speed end
-end)
-
-Button(PlayerPage, "Normal Speed", function()
-    Config.Speed = 16
-    local hum = Player.Character and
-        Player.Character:FindFirstChildOfClass("Humanoid")
-    if hum then hum.WalkSpeed = 16 end
-end)
-
-Button(PlayerPage, "Jump +", function()
-    Config.Jump = math.min(Config.Jump + 5, 150)
-    local hum = Player.Character and
-        Player.Character:FindFirstChildOfClass("Humanoid")
-    if hum then hum.JumpPower = Config.Jump end
-end)
-
-Button(PlayerPage, "Normal Jump", function()
-    Config.Jump = 50
-    local hum = Player.Character and
-        Player.Character:FindFirstChildOfClass("Humanoid")
-    if hum then hum.JumpPower = 50 end
-end)
-
--- WORLD
-
-Section(World, "ENVIRONMENT")
-
-Toggle(World, "Full Bright", "FullBright", function(value)
-    Lighting.Brightness = value and 3 or 1
-    Lighting.Ambient = value
-        and Color3.new(1,1,1)
-        or Color3.fromRGB(100,100,100)
-end)
-
-Toggle(World, "Fog", "Fog", function(value)
-    Lighting.FogEnd = value and 150 or 100000
-end)
-
-Button(World, "Day", function()
-    Lighting.ClockTime = 14
-end)
-
-Button(World, "Night", function()
-    Lighting.ClockTime = 0
-end)
-
-Button(World, "Morning", function()
-    Lighting.ClockTime = 7
-end)
-
--- MISC
-
-Section(Misc, "INTERFACE")
-
-Toggle(Misc, "Watermark", "Watermark", function(value)
-    Watermark.Visible = value
-end)
-
-Button(Misc, "Hide Menu", function()
-    Main.Visible = false
-end)
-
-Button(Misc, "Reset Interface", function()
-    Main.Visible = true
-    Main.BackgroundColor3 = Config.Background
-    Main.BackgroundTransparency = Config.Transparency
-end)
+Toggle("ESP Highlight","ESP")
+Toggle("ESP Box","Box")
+Toggle("ESP Names","Names")
+Toggle("ESP Health","Health")
+Toggle("ESP Skeleton","Skeleton")
 
 -- SETTINGS
 
-Section(Settings, "COLORS")
+Section("SETTINGS")
 
-Button(Settings, "Purple Theme", function()
+Button("Purple Theme",function()
     Config.Accent = Color3.fromRGB(145,85,255)
     Border.Color = Config.Accent
     Header.TextColor3 = Config.Accent
     Watermark.BackgroundColor3 = Config.Accent
 end)
 
-Button(Settings, "Red Theme", function()
+Button("Red Theme",function()
     Config.Accent = Color3.fromRGB(255,65,75)
     Border.Color = Config.Accent
     Header.TextColor3 = Config.Accent
     Watermark.BackgroundColor3 = Config.Accent
 end)
 
-Button(Settings, "Blue Theme", function()
+Button("Blue Theme",function()
     Config.Accent = Color3.fromRGB(50,150,255)
     Border.Color = Config.Accent
     Header.TextColor3 = Config.Accent
     Watermark.BackgroundColor3 = Config.Accent
 end)
 
-Button(Settings, "Dark Background", function()
-    Config.Background = Color3.fromRGB(14,15,23)
-    Main.BackgroundColor3 = Config.Background
+Button("Reset FOV",function()
+    Config.FOV = 150
 end)
-
-Button(Settings, "Purple Background", function()
-    Config.Background = Color3.fromRGB(38,20,55)
-    Main.BackgroundColor3 = Config.Background
-end)
-
-Button(Settings, "Transparency +", function()
-    Config.Transparency = math.min(Config.Transparency + 0.1, 0.7)
-    Main.BackgroundTransparency = Config.Transparency
-end)
-
-Button(Settings, "Transparency -", function()
-    Config.Transparency = math.max(Config.Transparency - 0.1, 0)
-    Main.BackgroundTransparency = Config.Transparency
-end)
-
--- WATERMARK OPEN / CLOSE
 
 Watermark.Activated:Connect(function()
     Main.Visible = not Main.Visible
@@ -414,45 +214,6 @@ Close.Activated:Connect(function()
     Main.Visible = false
 end)
 
--- DRAG MENU
-
-local dragging = false
-local dragStart
-local startPosition
-
-Header.InputBegan:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.Touch
-        or input.UserInputType == Enum.UserInputType.MouseButton1 then
-
-        dragging = true
-        dragStart = input.Position
-        startPosition = Main.Position
-    end
-end)
-
-UIS.InputChanged:Connect(function(input)
-    if dragging and (
-        input.UserInputType == Enum.UserInputType.Touch
-        or input.UserInputType == Enum.UserInputType.MouseMovement
-    ) then
-        local delta = input.Position - dragStart
-
-        Main.Position = UDim2.new(
-            startPosition.X.Scale,
-            startPosition.X.Offset + delta.X,
-            startPosition.Y.Scale,
-            startPosition.Y.Offset + delta.Y
-        )
-    end
-end)
-
-UIS.InputEnded:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.Touch
-        or input.UserInputType == Enum.UserInputType.MouseButton1 then
-        dragging = false
-    end
-end)
-
 -- FOV CIRCLE
 
 local Circle = Instance.new("Frame")
@@ -460,71 +221,274 @@ Circle.AnchorPoint = Vector2.new(0.5,0.5)
 Circle.BackgroundTransparency = 1
 Circle.Parent = GUI
 
-Instance.new("UICorner", Circle).CornerRadius = UDim.new(1,0)
+Instance.new("UICorner",Circle).CornerRadius = UDim.new(1,0)
 
-local CircleBorder = Instance.new("UIStroke")
-CircleBorder.Color = Config.Accent
-CircleBorder.Thickness = 1.5
-CircleBorder.Parent = Circle
+local CircleStroke = Instance.new("UIStroke")
+CircleStroke.Color = Config.Accent
+CircleStroke.Thickness = 1.5
+CircleStroke.Parent = Circle
 
--- TRAINING TARGET HIGHLIGHTS
+-- TARGET ESP
 
-local Highlights = {}
+local TargetObjects = {}
 
-local function UpdateTargets()
-    for _, target in ipairs(
-        CollectionService:GetTagged("TrainingTarget")
-    ) do
-        if target:IsA("Model") then
-            local highlight = Highlights[target]
+local Connections = {
+    {"UpperTorso","LowerTorso"},
+    {"UpperTorso","Head"},
+    {"UpperTorso","LeftUpperArm"},
+    {"LeftUpperArm","LeftLowerArm"},
+    {"UpperTorso","RightUpperArm"},
+    {"RightUpperArm","RightLowerArm"},
+    {"LowerTorso","LeftUpperLeg"},
+    {"LeftUpperLeg","LeftLowerLeg"},
+    {"LowerTorso","RightUpperLeg"},
+    {"RightUpperLeg","RightLowerLeg"}
+}
 
-            if not highlight then
-                highlight = Instance.new("Highlight")
-                highlight.FillColor = Config.Accent
-                highlight.OutlineColor = Color3.new(1,1,1)
-                highlight.Parent = target
-                Highlights[target] = highlight
-            end
+local function CreateTarget(model)
+    if TargetObjects[model] then return end
 
-            highlight.Enabled = Config.ESP
-                or Config.Box
-                or Config.Skeleton
+    local root = model:FindFirstChild("HumanoidRootPart")
+    if not root then return end
+
+    local data = {}
+
+    -- Highlight
+    local highlight = Instance.new("Highlight")
+    highlight.Adornee = model
+    highlight.FillColor = Config.Accent
+    highlight.OutlineColor = Color3.new(1,1,1)
+    highlight.FillTransparency = 0.75
+    highlight.Enabled = false
+    highlight.Parent = GUI
+    data.Highlight = highlight
+
+    -- Billboard ESP
+    local billboard = Instance.new("BillboardGui")
+    billboard.Name = "XONE_ESP"
+    billboard.Adornee = root
+    billboard.Size = UDim2.fromOffset(100,120)
+    billboard.StudsOffset = Vector3.new(0,3.5,0)
+    billboard.AlwaysOnTop = true
+    billboard.Enabled = false
+    billboard.Parent = GUI
+
+    local box = Instance.new("Frame")
+    box.Size = UDim2.fromScale(1,1)
+    box.BackgroundTransparency = 1
+    box.Parent = billboard
+
+    local stroke = Instance.new("UIStroke")
+    stroke.Color = Config.Accent
+    stroke.Thickness = 1.5
+    stroke.Parent = box
+
+    local nameLabel = Instance.new("TextLabel")
+    nameLabel.Size = UDim2.new(1,0,0,20)
+    nameLabel.Position = UDim2.new(0,0,0,-22)
+    nameLabel.BackgroundTransparency = 1
+    nameLabel.TextColor3 = Color3.new(1,1,1)
+    nameLabel.TextStrokeTransparency = 0
+    nameLabel.Font = Enum.Font.GothamBold
+    nameLabel.TextSize = 12
+    nameLabel.Parent = box
+
+    local healthBack = Instance.new("Frame")
+    healthBack.Size = UDim2.new(1,0,0,5)
+    healthBack.Position = UDim2.new(0,0,1,3)
+    healthBack.BackgroundColor3 = Color3.fromRGB(50,50,50)
+    healthBack.BorderSizePixel = 0
+    healthBack.Parent = box
+
+    local healthFill = Instance.new("Frame")
+    healthFill.Size = UDim2.fromScale(1,1)
+    healthFill.BackgroundColor3 = Color3.fromRGB(50,220,90)
+    healthFill.BorderSizePixel = 0
+    healthFill.Parent = healthBack
+
+    data.Billboard = billboard
+    data.Box = box
+    data.Stroke = stroke
+    data.NameLabel = nameLabel
+    data.HealthBack = healthBack
+    data.HealthFill = healthFill
+    data.Beams = {}
+
+    -- Skeleton beams for R15 rigs
+    local attachments = {}
+
+    for _,edge in ipairs(Connections) do
+        local part0 = model:FindFirstChild(edge[1])
+        local part1 = model:FindFirstChild(edge[2])
+
+        if part0 and part1 and part0:IsA("BasePart")
+            and part1:IsA("BasePart") then
+
+            local a0 = Instance.new("Attachment")
+            a0.Parent = part0
+
+            local a1 = Instance.new("Attachment")
+            a1.Parent = part1
+
+            local beam = Instance.new("Beam")
+            beam.Attachment0 = a0
+            beam.Attachment1 = a1
+            beam.Width0 = 0.045
+            beam.Width1 = 0.045
+            beam.FaceCamera = true
+            beam.Color = ColorSequence.new(Config.Accent)
+            beam.Enabled = false
+            beam.Parent = model
+
+            table.insert(data.Beams,{Beam=beam,A0=a0,A1=a1})
         end
     end
 
-    for target, highlight in pairs(Highlights) do
-        if not target.Parent then
-            highlight:Destroy()
-            Highlights[target] = nil
-        end
-    end
+    TargetObjects[model] = data
 end
 
--- RENDER
+local function RemoveTarget(model)
+    local data = TargetObjects[model]
+    if not data then return end
+
+    data.Highlight:Destroy()
+    data.Billboard:Destroy()
+
+    for _,item in ipairs(data.Beams) do
+        item.Beam:Destroy()
+        item.A0:Destroy()
+        item.A1:Destroy()
+    end
+
+    TargetObjects[model] = nil
+end
+
+-- AIM TARGET SELECTION
+
+local function IsVisible(target,part)
+    local params = RaycastParams.new()
+    params.FilterType = Enum.RaycastFilterType.Exclude
+    params.FilterDescendantsInstances = {Player.Character}
+
+    local direction = part.Position - Camera.CFrame.Position
+    local result = workspace:Raycast(
+        Camera.CFrame.Position,
+        direction,
+        params
+    )
+
+    return result == nil or result.Instance:IsDescendantOf(target)
+end
+
+local function GetBestTarget()
+    local center = Camera.ViewportSize / 2
+    local bestTarget = nil
+    local bestDistance = Config.FOV
+
+    for _,model in ipairs(CollectionService:GetTagged("TrainingTarget")) do
+        if model:IsA("Model") and model ~= Player.Character then
+            local humanoid = model:FindFirstChildOfClass("Humanoid")
+            local head = model:FindFirstChild("Head")
+
+            if humanoid and humanoid.Health > 0 and head then
+                local screen,visible = Camera:WorldToViewportPoint(head.Position)
+
+                if visible and screen.Z > 0 then
+                    local distance = (
+                        Vector2.new(screen.X,screen.Y) - center
+                    ).Magnitude
+
+                    if distance < bestDistance and IsVisible(model,head) then
+                        bestDistance = distance
+                        bestTarget = head
+                    end
+                end
+            end
+        end
+    end
+
+    return bestTarget
+end
+
+-- UPDATE
 
 RunService.RenderStepped:Connect(function()
     Camera = workspace.CurrentCamera
 
     local center = Camera.ViewportSize / 2
 
-    Circle.Position = UDim2.fromOffset(center.X, center.Y)
-    Circle.Size = UDim2.fromOffset(
-        Config.CircleFOV * 2,
-        Config.CircleFOV * 2
-    )
-
+    Circle.Position = UDim2.fromOffset(center.X,center.Y)
+    Circle.Size = UDim2.fromOffset(Config.FOV*2,Config.FOV*2)
     Circle.Visible = Config.ShowCircle
+    CircleStroke.Color = Config.Accent
 
-    CircleBorder.Color = Config.Accent
-
-    for target, highlight in pairs(Highlights) do
-        highlight.FillColor = Config.Accent
-        highlight.Enabled = Config.ESP
+    -- Refresh target list
+    for _,model in ipairs(CollectionService:GetTagged("TrainingTarget")) do
+        if model:IsA("Model") then
+            CreateTarget(model)
+        end
     end
 
-    UpdateTargets()
+    for model,data in pairs(TargetObjects) do
+        if not model.Parent or not CollectionService:HasTag(model,"TrainingTarget") then
+            RemoveTarget(model)
+        else
+            local humanoid = model:FindFirstChildOfClass("Humanoid")
+            local root = model:FindFirstChild("HumanoidRootPart")
+
+            local alive = humanoid and humanoid.Health > 0 and root
+
+            data.Highlight.Enabled = alive and Config.ESP
+            data.Billboard.Enabled = alive and (
+                Config.Box or Config.Names or Config.Health
+            )
+
+            data.Stroke.Enabled = Config.Box
+            data.NameLabel.Visible = Config.Names
+            data.NameLabel.Text = model.Name
+            data.HealthBack.Visible = Config.Health
+
+            if humanoid then
+                local percent = math.clamp(
+                    humanoid.Health / math.max(humanoid.MaxHealth,1),
+                    0,1
+                )
+                data.HealthFill.Size = UDim2.fromScale(percent,1)
+            end
+
+            data.Highlight.FillColor = Config.Accent
+            data.Stroke.Color = Config.Accent
+
+            for _,item in ipairs(data.Beams) do
+                item.Beam.Enabled = alive and Config.Skeleton
+                item.Beam.Color = ColorSequence.new(Config.Accent)
+            end
+        end
+    end
+
+    -- Aim Assist for tagged training targets only
+    if Config.Aim then
+        local target = GetBestTarget()
+
+        if target then
+            local desired = CFrame.lookAt(
+                Camera.CFrame.Position,
+                target.Position
+            )
+
+            Camera.CFrame = Camera.CFrame:Lerp(
+                desired,
+                Config.AimSmooth
+            )
+        end
+    end
 end)
 
-SwitchPage("Combat")
+-- Cleanup
+Players.PlayerRemoving:Connect(function()
+    for model in pairs(TargetObjects) do
+        RemoveTarget(model)
+    end
+end)
 
-print("XONE MEGA v3 LOADED")
+print("XONE MEGA v4 LOADED")
